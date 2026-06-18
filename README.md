@@ -1,40 +1,51 @@
-# VoiceCode
+# VoiceCode — offline-first speech practice app for Windows.
 
-Offline-first speech practice app for Windows (Flutter + Riverpod + SQLite).
+## Open the app (pick ONE)
 
-## Quick start (Windows)
+### Easiest — Desktop shortcut
+Double-click **VoiceCode** on your Desktop.
 
-1. Install Flutter at `%USERPROFILE%\flutter` (full SDK with `packages\flutter_tools`).
-2. Enable **Developer Mode**: Settings → Privacy & security → For developers.
-3. Install **Visual Studio 2022 Build Tools** with “Desktop development with C++”.
-4. Double-click **`RUN.bat`** (first time — builds) or **`START.bat`** (quick relaunch):
+### Quick start
+Double-click **`START.bat`** in the project folder.
 
-```powershell
-cd "path\to\english practise speeking"
-.\scripts\launch.ps1
+### First time / after code changes
+Double-click **`RUN.bat`** — builds and installs to `C:\VoiceCodeApp`.
+
+### Direct open (always works)
+Double-click:
+```
+C:\VoiceCodeApp\OPEN.bat
 ```
 
-**Important:** Do not run `voicecode.exe` from OneDrive or copy the `.exe` alone. All DLLs must stay in the same folder:
+---
 
-```
-C:\voicecode\build\windows\x64\runner\Release\
-```
+## Important
 
-The launcher syncs the project to `C:\voicecode`, builds Release, and opens the app from that folder.
+- **Do NOT** copy only `voicecode.exe` — all DLLs must stay together.
+- **Do NOT** run the exe from OneDrive — use `C:\VoiceCodeApp` instead.
+- The app is installed at **`C:\VoiceCodeApp`** with all required files:
+  - `voicecode.exe`
+  - `flutter_windows.dll`
+  - `record_windows_plugin.dll`
+  - `just_audio_windows_plugin.dll`
+  - `sqlite3_flutter_libs_plugin.dll`
+  - `sqlite3.dll`
+  - `data\` folder
 
-## Optional: speech-to-text
+---
 
-For full transcripts after recording:
+## Setup (one time)
 
-```powershell
-pip install faster-whisper
-```
+1. Flutter at `%USERPROFILE%\flutter`
+2. **Developer Mode ON** — Settings → Privacy & security → For developers
+3. Visual Studio 2022 Build Tools with Desktop C++
+4. Run **`RUN.bat`** once
 
-## Project layout
+Optional transcripts: `pip install faster-whisper`
 
-- `lib/` — app code (Clean Architecture)
-- `scripts/run.ps1` — Windows launcher
-- `scripts/setup.ps1` — one-time Flutter setup
+## GitHub
+
+https://github.com/VamshiKrishnaBandari07/voxcore-ai
 
 ## Author
 
