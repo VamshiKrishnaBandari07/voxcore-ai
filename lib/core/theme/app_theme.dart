@@ -1,70 +1,96 @@
 import 'package:flutter/material.dart';
 
-import 'app_fonts.dart';
+import '../theme/app_fonts.dart';
 
-/// Professional high-contrast dark theme for VoiceCode.
 abstract final class AppTheme {
-  static const Color _background = Color(0xFF0A0A0A);
-  static const Color _surface = Color(0xFF141414);
-  static const Color _surfaceHigh = Color(0xFF1E1E1E);
-  static const Color _primary = Color(0xFF4FC3F7);
-  static const Color _secondary = Color(0xFF81C784);
-  static const Color _onSurface = Color(0xFFF5F5F5);
-  static const Color _muted = Color(0xFF9E9E9E);
+  static const Color background = Color(0xFF08080C);
+  static const Color surface = Color(0xFF12121A);
+  static const Color surfaceHigh = Color(0xFF1A1A24);
+  static const Color primary = Color(0xFF5CE1E6);
+  static const Color secondary = Color(0xFF7CFFB2);
+  static const Color accent = Color(0xFF9B8CFF);
+  static const Color onSurface = Color(0xFFF4F4F8);
+  static const Color muted = Color(0xFF8B8B9A);
+  static const Color border = Color(0xFF2A2A38);
 
   static ThemeData get dark {
-    final base = ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: _background,
-      colorScheme: const ColorScheme.dark(
-        primary: _primary,
-        onPrimary: Color(0xFF001018),
-        secondary: _secondary,
-        onSecondary: Color(0xFF0A1A0D),
-        surface: _surface,
-        onSurface: _onSurface,
-        error: Color(0xFFEF5350),
-        outline: Color(0xFF424242),
-      ),
+    const scheme = ColorScheme.dark(
+      primary: primary,
+      onPrimary: Color(0xFF001014),
+      secondary: secondary,
+      onSecondary: Color(0xFF001408),
+      tertiary: accent,
+      surface: surface,
+      onSurface: onSurface,
+      error: Color(0xFFFF6B6B),
+      outline: border,
     );
 
+    final base = ThemeData(useMaterial3: true, brightness: Brightness.dark, colorScheme: scheme);
     final textTheme = AppFonts.interTextTheme(base.textTheme).apply(
-      bodyColor: _onSurface,
-      displayColor: _onSurface,
+      bodyColor: onSurface,
+      displayColor: onSurface,
     );
 
     return base.copyWith(
+      scaffoldBackgroundColor: background,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: _background,
-        foregroundColor: _onSurface,
+        backgroundColor: background,
+        foregroundColor: onSurface,
         elevation: 0,
-        titleTextStyle: AppFonts.inter(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: _onSurface,
-        ),
+        centerTitle: false,
+        titleTextStyle: AppFonts.inter(fontSize: 20, fontWeight: FontWeight.w700),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surface,
+        indicatorColor: primary.withOpacity(0.18),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return AppFonts.inter(
+            fontSize: 12,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: selected ? primary : muted,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(color: selected ? primary : muted, size: 24);
+        }),
       ),
       cardTheme: CardThemeData(
-        color: _surfaceHigh,
+        color: surfaceHigh,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Color(0xFF2A2A2A)),
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: border),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
-          foregroundColor: const Color(0xFF001018),
-          textStyle: AppFonts.inter(fontWeight: FontWeight.w600),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          backgroundColor: primary,
+          foregroundColor: const Color(0xFF001014),
+          textStyle: AppFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
-      dividerTheme: const DividerThemeData(color: Color(0xFF2A2A2A)),
-      hintColor: _muted,
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: surfaceHigh,
+          foregroundColor: onSurface,
+          side: const BorderSide(color: border),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      dividerTheme: const DividerThemeData(color: border),
+      hintColor: muted,
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: surfaceHigh,
+        contentTextStyle: AppFonts.inter(color: onSurface),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 }

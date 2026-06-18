@@ -5,7 +5,7 @@ echo.
 echo  VoiceCode - Setup and Launch
 echo  ============================
 echo.
-powershell -ExecutionPolicy Bypass -File ".\scripts\launch.ps1"
+powershell -ExecutionPolicy Bypass -File ".\scripts\launch.ps1" -Rebuild
 if errorlevel 1 (
     echo.
     echo  FAILED - read the error above.

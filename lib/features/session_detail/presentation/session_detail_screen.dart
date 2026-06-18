@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_fonts.dart';
 
+import '../../../core/settings/app_settings.dart';
 import '../../../core/models/transcript.dart';
 import '../../../services/audio/session_audio_player_service.dart';
 import '../../../services/providers/app_providers.dart';
@@ -56,6 +57,12 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     if (path == null || path.isEmpty || _audioLoaded) return;
 
     await ref.read(sessionAudioPlayerProvider(widget.sessionId)).load(path);
+    final settings = ref.read(appSettingsProvider).value;
+    if (settings != null) {
+      await ref
+          .read(sessionAudioPlayerProvider(widget.sessionId))
+          .setSpeed(settings.defaultPlaybackSpeed);
+    }
     if (mounted) setState(() => _audioLoaded = true);
   }
 

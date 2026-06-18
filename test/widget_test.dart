@@ -9,13 +9,13 @@ void main() {
     await initializeDatabaseFactory();
   });
 
-  testWidgets('VoiceCode app loads home screen', (tester) async {
+  testWidgets('VoiceCode app loads shell', (tester) async {
     await tester.pumpWidget(
       const ProviderScope(child: VoiceCodeApp()),
     );
     await tester.pump();
 
     expect(find.text('VoiceCode'), findsOneWidget);
-    expect(find.text('Start Session'), findsOneWidget);
+    expect(find.text('Practice'), findsOneWidget);
   });
 }

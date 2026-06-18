@@ -1,4 +1,6 @@
 # Build, publish to C:\VoiceCodeApp, and launch VoiceCode.
+param([switch]$Rebuild)
+
 $ErrorActionPreference = "Stop"
 
 $ScriptRoot = $PSScriptRoot
@@ -123,7 +125,7 @@ Sync-Project
 Set-Location $RunProject
 Ensure-FlutterPlugins
 
-if (-not (Test-BundleComplete $BundleDir)) {
+if (-not (Test-BundleComplete $BundleDir) -or $Rebuild) {
     Build-App
 }
 
