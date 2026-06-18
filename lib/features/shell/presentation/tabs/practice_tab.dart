@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_fonts.dart';
+import '../../../conversation/presentation/scenario_picker_screen.dart';
 import '../../../home/presentation/home_view_model.dart';
 import '../../../session_detail/presentation/session_detail_screen.dart';
 
@@ -13,6 +14,8 @@ class PracticeTab extends ConsumerStatefulWidget {
 }
 
 class _PracticeTabState extends ConsumerState<PracticeTab> {
+  bool _soloMode = false;
+
   @override
   Widget build(BuildContext context) {
     ref.listen<HomeState>(homeViewModelProvider, (previous, next) {
@@ -26,6 +29,133 @@ class _PracticeTabState extends ConsumerState<PracticeTab> {
       );
     });
 
+    if (_soloMode) {
+      return _SoloPractice(onBack: () => setState(() => _soloMode = false));
+    }
+
+    final theme = Theme.of(context);
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+      children: [
+        Text('Practice', style: AppFonts.inter(fontSize: 28, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 8),
+        Text(
+          'Choose how you want to practice English today.',
+          style: AppFonts.inter(color: theme.hintColor, height: 1.4),
+        ),
+        const SizedBox(height: 24),
+        _ModeCard(
+          icon: Icons.groups_rounded,
+          title: 'Practice with a co-friend',
+          subtitle: 'Take turns — they ask, you answer, they respond. Like real conversation.',
+          accent: theme.colorScheme.primary,
+          badge: 'Recommended',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const ScenarioPickerScreen()),
+          ),
+        ),
+        const SizedBox(height: 14),
+        _ModeCard(
+          icon: Icons.mic_rounded,
+          title: 'Solo recording',
+          subtitle: 'Record one long session and get full metrics.',
+          accent: theme.colorScheme.tertiary,
+          onTap: () => setState(() => _soloMode = true),
+        ),
+      ],
+    );
+  }
+}
+
+class _ModeCard extends StatelessWidget {
+  const _ModeCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.accent,
+    required this.onTap,
+    this.badge,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color accent;
+  final VoidCallback onTap;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.cardTheme.color,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: accent.withOpacity(0.35)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: accent.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: accent, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(title, style: AppFonts.inter(fontWeight: FontWeight.w800, fontSize: 17)),
+                        ),
+                        if (badge != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: accent.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              badge!,
+                              style: AppFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: accent),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(subtitle, style: AppFonts.inter(fontSize: 13, color: theme.hintColor, height: 1.35)),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_rounded, color: accent),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SoloPractice extends ConsumerWidget {
+  const _SoloPractice({required this.onBack});
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeViewModelProvider);
     final theme = Theme.of(context);
     final recording = state.isRecording;
@@ -34,118 +164,38 @@ class _PracticeTabState extends ConsumerState<PracticeTab> {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
       child: Column(
         children: [
-          Text(
-            'Practice',
-            style: AppFonts.inter(fontSize: 28, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            recording
-                ? 'Speak naturally. We analyze clarity, pace, and fillers.'
-                : 'Tap the button below to start a new session.',
-            textAlign: TextAlign.center,
-            style: AppFonts.inter(color: theme.hintColor, height: 1.4),
+          Row(
+            children: [
+              IconButton(onPressed: onBack, icon: const Icon(Icons.arrow_back_rounded)),
+              Text('Solo recording', style: AppFonts.inter(fontSize: 20, fontWeight: FontWeight.w700)),
+            ],
           ),
           const Spacer(),
           if (recording)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.colorScheme.error.withOpacity(0.5)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.fiber_manual_record, color: theme.colorScheme.error, size: 14),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Recording ${state.recordingElapsedLabel}',
-                    style: AppFonts.inter(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 18,
-                      color: theme.colorScheme.error,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            Text('Recording ${state.recordingElapsedLabel}',
+                style: AppFonts.inter(fontWeight: FontWeight.w800, color: theme.colorScheme.error)),
+          const SizedBox(height: 24),
           GestureDetector(
             onTap: () => ref.read(homeViewModelProvider.notifier).toggleRecording(),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              width: recording ? 120 : 160,
-              height: recording ? 120 : 160,
+            child: Container(
+              width: recording ? 120 : 150,
+              height: recording ? 120 : 150,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: recording ? theme.colorScheme.error : theme.colorScheme.primary,
-                border: Border.all(
-                  color: (recording ? theme.colorScheme.error : theme.colorScheme.primary)
-                      .withOpacity(0.4),
-                  width: 8,
-                ),
+                color: recording ? theme.colorScheme.error : theme.colorScheme.tertiary,
               ),
               child: Icon(
                 recording ? Icons.stop_rounded : Icons.mic_rounded,
-                size: recording ? 48 : 56,
-                color: recording ? Colors.white : const Color(0xFF001014),
+                size: 52,
+                color: Colors.white,
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          Text(
-            recording ? 'Tap to stop' : 'Start session',
-            style: AppFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
-          ),
+          const SizedBox(height: 16),
+          Text(recording ? 'Tap to stop' : 'Start session', style: AppFonts.inter(fontWeight: FontWeight.w600)),
           const Spacer(flex: 2),
-          if (state.errorMessage != null)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.error.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                state.errorMessage!,
-                style: AppFonts.inter(fontSize: 12, color: theme.colorScheme.error),
-              ),
-            ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            alignment: WrapAlignment.center,
-            children: const [
-              _TipChip(label: 'Speak for 30–90 sec'),
-              _TipChip(label: 'Quiet room helps'),
-              _TipChip(label: 'Natural pace'),
-            ],
-          ),
         ],
       ),
-    );
-  }
-}
-
-class _TipChip extends StatelessWidget {
-  const _TipChip({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.dividerColor),
-      ),
-      child: Text(label, style: AppFonts.inter(fontSize: 12, color: theme.hintColor)),
     );
   }
 }
