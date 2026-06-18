@@ -4,20 +4,23 @@ import 'dart:io';
 import '../../core/models/word_timestamp.dart';
 
 /// Invokes local faster_whisper (Python) for word-level timestamps.
-/// Requires: pip install faster-whisper
+/// Optional — returns empty list when Python/ASR is unavailable.
 abstract final class FasterWhisperBridge {
   static const String _modelSize = 'base';
 
   static Future<List<WordTimestamp>> transcribeWords(String audioPath) async {
     if (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS) {
-      throw UnsupportedError(
-        'faster_whisper bridge is configured for desktop targets.',
-      );
+      return const [];
     }
 
-    const script = r'''
+    try {
+      const script = r'''
 import json, sys
-from faster_whisper import WhisperModel
+try:
+    from faster_whisper import WhisperModel
+except ImportError:
+    print("[]")
+    sys.exit(0)
 
 audio_path = sys.argv[1]
 model_size = sys.argv[2]
@@ -42,30 +45,32 @@ for segment in segments:
 print(json.dumps(words))
 ''';
 
-    final python = Platform.isWindows ? 'python' : 'python3';
-    final result = await Process.run(
-      python,
-      ['-c', script, audioPath, _modelSize],
-    );
-
-    if (result.exitCode != 0) {
-      throw StateError(
-        'faster_whisper failed: ${result.stderr}'.trim(),
+      final python = Platform.isWindows ? 'python' : 'python3';
+      final result = await Process.run(
+        python,
+        ['-c', script, audioPath, _modelSize],
+        runInShell: Platform.isWindows,
       );
-    }
 
-    final stdout = (result.stdout as String).trim();
-    if (stdout.isEmpty) {
+      if (result.exitCode != 0) {
+        return const [];
+      }
+
+      final stdout = (result.stdout as String).trim();
+      if (stdout.isEmpty || stdout == '[]') {
+        return const [];
+      }
+
+      final decoded = jsonDecode(stdout) as List<dynamic>;
+      return decoded
+          .map(
+            (entry) => WordTimestamp.fromJson(
+              Map<String, dynamic>.from(entry as Map),
+            ),
+          )
+          .toList();
+    } catch (_) {
       return const [];
     }
-
-    final decoded = jsonDecode(stdout) as List<dynamic>;
-    return decoded
-        .map(
-          (entry) => WordTimestamp.fromJson(
-            Map<String, dynamic>.from(entry as Map),
-          ),
-        )
-        .toList();
   }
 }

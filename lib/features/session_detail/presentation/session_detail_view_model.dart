@@ -211,11 +211,23 @@ class SessionDetailViewModel
         clearError: true,
       );
     } catch (error) {
+      final message = _friendlyError(error);
       state = state.copyWith(
         processingStage: ProcessingStage.error,
-        errorMessage: error.toString(),
+        errorMessage: message,
       );
     }
+  }
+
+  String _friendlyError(Object error) {
+    final text = error.toString();
+    if (text.contains('UnsupportedError') || text.contains('Unsupported operation')) {
+      return 'Analysis could not finish. Tap Retry — the app now runs analysis without background isolates.';
+    }
+    if (text.contains('Permission') || text.contains('microphone')) {
+      return 'Microphone access denied. Enable mic in Windows Settings → Privacy.';
+    }
+    return text.replaceFirst('Exception: ', '').replaceFirst('StateError: ', '');
   }
 }
 

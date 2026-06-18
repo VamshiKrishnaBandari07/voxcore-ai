@@ -3,7 +3,7 @@ import '../../core/models/word_timestamp.dart';
 import 'audio_silence_detector.dart';
 import 'faster_whisper_bridge.dart';
 
-/// Top-level isolate worker: ASR + silence detection. Must stay deterministic.
+/// Local ASR + silence detection. Runs on the main isolate for Windows compatibility.
 Future<AsrResult> transcribeInIsolate(String audioPath) async {
   final silences = await AudioSilenceDetector.detect(audioPath);
 
@@ -14,7 +14,10 @@ Future<AsrResult> transcribeInIsolate(String audioPath) async {
     words = const [];
   }
 
-  words.sort((a, b) => a.startMs.compareTo(b.startMs));
+  if (words.isNotEmpty) {
+    words = List<WordTimestamp>.from(words)
+      ..sort((a, b) => a.startMs.compareTo(b.startMs));
+  }
 
   final fullText = words.map((w) => w.word).join(' ').trim();
 
