@@ -1,7 +1,7 @@
 # Create GitHub repo (if needed) and push main branch.
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
-$RepoName = "voicecode"
+$RepoName = "voxcore-ai"
 $Remote = "git@github.com:VamshiKrishnaBandari07/$RepoName.git"
 
 Set-Location $ProjectRoot
