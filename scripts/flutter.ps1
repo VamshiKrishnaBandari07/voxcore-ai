@@ -15,7 +15,7 @@ if (-not (Test-Path $FlutterBat)) {
 $env:FLUTTER_ROOT = $FlutterRoot
 $env:PUB_CACHE = "C:\ProgramData\Pub\Cache"
 New-Item -ItemType Directory -Path $env:PUB_CACHE -Force | Out-Null
-$env:PATH = "$(Join-Path $FlutterRoot 'bin');$env:PATH"
+$env:PATH = "$(Join-Path $FlutterRoot 'bin');${env:PATH}"
 
 & $FlutterBat @Command
 exit $LASTEXITCODE

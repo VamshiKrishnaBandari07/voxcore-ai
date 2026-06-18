@@ -7,14 +7,20 @@ Offline-first speech practice app for Windows (Flutter + Riverpod + SQLite).
 1. Install Flutter at `%USERPROFILE%\flutter` (full SDK with `packages\flutter_tools`).
 2. Enable **Developer Mode**: Settings → Privacy & security → For developers.
 3. Install **Visual Studio 2022 Build Tools** with “Desktop development with C++”.
-4. Double-click **`RUN.bat`** or run:
+4. Double-click **`RUN.bat`** (first time — builds) or **`START.bat`** (quick relaunch):
 
 ```powershell
 cd "path\to\english practise speeking"
-.\scripts\run.ps1
+.\scripts\launch.ps1
 ```
 
-The launcher syncs the project to `C:\voicecode`, resolves plugins, builds, and runs the app. Keep the terminal open while using the app.
+**Important:** Do not run `voicecode.exe` from OneDrive or copy the `.exe` alone. All DLLs must stay in the same folder:
+
+```
+C:\voicecode\build\windows\x64\runner\Release\
+```
+
+The launcher syncs the project to `C:\voicecode`, builds Release, and opens the app from that folder.
 
 ## Optional: speech-to-text
 

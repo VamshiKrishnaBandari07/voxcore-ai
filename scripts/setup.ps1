@@ -24,7 +24,7 @@ if (-not (Test-Path (Join-Path $FlutterRoot "packages\flutter_tools"))) {
 New-Item -ItemType Directory -Path $PubCache -Force | Out-Null
 $env:FLUTTER_ROOT = $FlutterRoot
 $env:PUB_CACHE = $PubCache
-$env:PATH = "$(Join-Path $FlutterRoot 'bin');$env:PATH"
+$env:PATH = "$(Join-Path $FlutterRoot 'bin');${env:PATH}"
 
 Set-Location $ProjectRoot
 
